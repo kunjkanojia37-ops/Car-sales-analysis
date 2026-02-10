@@ -70,7 +70,7 @@ sale_in_month.plot(kind="bar")
 plt.title("Monthly car sales trend")
 plt.xlabel("Months")
 plt.ylabel("Total Sales")
-plt.savefig("D:\python\project\car-sales-analysis\data\processed\sale_in_month.png",dpi =300)
+plt.savefig("D:\python\project\car-sales-analysis\data\processed\sales_in_month.png",dpi =300)
 plt.show()
 
 print("Top performing car brands")

@@ -81,9 +81,9 @@ data/processed/car-sales-output.csv
 
 - Processed Image file saved at:
 
- - data\processed\sales_by_model.png
+ - data\processed\sales_in_month.png
  
- - data\processed\Quantity_of_model.png
+ - data\processed\performance_of_model.png
 
 
 
