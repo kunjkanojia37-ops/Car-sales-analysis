@@ -64,6 +64,7 @@ print("\n Total sales by each car Model \n")
 sale_by_model = car_sales_dataframe.groupby("Car Model")["Total Sale"].sum()
 print(sale_by_model)
 
+# Show total sales by each car Model in bar chart
 sale_by_model.plot(kind="bar")
 plt.title("Total sales by Car Model")
 plt.xlabel("Car Model")
@@ -75,6 +76,7 @@ print("Quantity of each car Model")
 Qty_of_model = car_sales_dataframe.groupby("Car Model")["Qty"].sum()
 print(Qty_of_model)
 
+# Show quantity of each car Model in bar chart
 sale_by_model.plot(kind="bar")
 plt.title("Quantity of Car Model")
 plt.xlabel("Car Model")
