@@ -60,26 +60,28 @@ import matplotlib.pyplot as plt
 import os
 os.makedirs(r"D:\python\project\car-sales-analysis\data\processed",exist_ok=True)
 
-print("\n Total sales by each car Model \n")
-sale_by_model = car_sales_dataframe.groupby("Car Model")["Total Sale"].sum()
-print(sale_by_model)
+print("\n Monthly car sales trend \n")
+sale_in_month= car_sales_dataframe.groupby("months")["Total Sale"].sum()
+print(sale_in_month)
 
 # Show total sales by each car Model in bar chart
-sale_by_model.plot(kind="bar")
-plt.title("Total sales by Car Model")
-plt.xlabel("Car Model")
+sale_in_month.plot(kind="bar")
+
+plt.title("Monthly car sales trend")
+plt.xlabel("Months")
 plt.ylabel("Total Sales")
-plt.savefig("D:\python\project\car-sales-analysis\data\processed\sales_by_model.png",dpi =300)
+plt.savefig("D:\python\project\car-sales-analysis\data\processed\sale_in_month.png",dpi =300)
 plt.show()
 
-print("Quantity of each car Model")
-Qty_of_model = car_sales_dataframe.groupby("Car Model")["Qty"].sum()
-print(Qty_of_model)
+print("Top performing car brands")
+performance_of_model = car_sales_dataframe.groupby("Car Model")["Total Sale"].sum()
+print(performance_of_model)
 
-# Show quantity of each car Model in bar chart
-sale_by_model.plot(kind="bar")
-plt.title("Quantity of Car Model")
-plt.xlabel("Car Model")
-plt.ylabel("Car Quantity")
-plt.savefig("D:\python\project\car-sales-analysis\data\processed\Quantity_of_model.png",dpi =300)
+# Show top performing car brands
+performance_of_model.plot(kind="bar")
+
+plt.title("Top performing car brands")
+plt.xlabel("Brand")
+plt.ylabel("Total sales")
+plt.savefig("D:\python\project\car-sales-analysis\data\processed\performance_of_model.png",dpi =300)
 plt.show()
