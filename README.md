@@ -1,90 +1,122 @@
-#  Car Sales Analysis using Python
+# 🚗 Car Sales Analysis using Python
 
-This project analyzes car sales data using **Python**, **Pandas**, and **Matplotlib**.  
-It calculates taxes (CGST & SGST), total sales, exports the processed data, and visualizes total sales by car model.
+This project performs end-to-end sales data analysis using:
+
+- Python
+- Pandas
+- Matplotlib
+- OpenPyXL
+
+It calculates revenue, profit, tax, performs monthly growth analysis, generates charts, and exports a fully formatted Excel report.
 
 ---
 
-##  Project Structure
+## 📁 Project Structure
 
 car-sales-analysis/
 │
 ├── data/
-│ ├── raw/
-│ │ └── car-sales-input.csv
-│ └── processed/
-│ └── car-sales-output.csv
+│   ├── raw/
+│   │   └── car-sales-input.csv
+│   │
+│   └── processed/
+│       ├── car-sales-output.xlsx
+│       ├── profit_by_model.png
+│       └── monthly_growth.png
 │
-├── car_sales_analysis.py
-├── README.md
-└── requirements.txt
-
-
----
-
-## Input Data
-
-The input CSV file should contain at least the following columns:
-
-- **Car Model**
-- **Price**
-- **Qty**
-
-Example:
-Car Model , Price , Qty
-Swift,     600000,  2
-Creta,    1200000,  1
-
+├── main.py
+├── requirements.txt
+└── README.md
 
 ---
 
-##  Features
+## 📊 Features
 
-- Loads car sales data from CSV
-- Displays basic dataset information
+### ✅ Data Processing
 - Calculates:
-  - Non Taxable Amount
-  - CGST (9%)
-  - SGST (9%)
-  - Total Tax
-  - Total Sale Amount
-  - KPI summary
-- Exports processed data to a new CSV file
-- Visualizes total sales and Quantity by car model using a bar chart
+  - Total Tax (CGST + SGST)
+  - Revenue
+  - Profit
+- Model-wise profit analysis
+- Monthly revenue & MoM growth %
+
+### 📈 Visualization
+- Profit by Model (Bar Chart)
+- Month-to-Month Growth (Line Chart)
+
+Charts are automatically saved inside the `processed` folder.
+
+### 📑 Excel Report Automation
+- Multiple sheets in one Excel file
+- Auto-adjust column width
+- Center alignment
+- All cell borders applied
+- KPI Summary sheet included
 
 ---
 
-##  How to Run
+## 📥 Input File Format
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
+Your `car-sales-input.csv` should contain at least:
 
-## Install dependencies
+- Model
+- Date
+- Quantity
+- Selling price
+- Cost price
+- CGST
+- SGST
+- Discount
+- Mode
+
+---
+
+## ▶️ How to Run
+
+### 1️⃣ Clone the repository
+
+git clone <your-repository-url>  
+cd car-sales-analysis
+
+### 2️⃣ Install dependencies
 
 pip install -r requirements.txt
 
----
-## Run the script
+### 3️⃣ Run the script
 
-python car_sales_analysis.py
-
----
-
-data/processed/car-sales-output.csv
-
-## Output
-
-- Processed CSV file saved at:
-
- - data/processed/car-sales-output.csv
-
-- Processed Image file saved at:
-
- - data\processed\sales_in_month.png
- 
- - data\processed\performance_of_model.png
-
-
+python main.py
 
 ---
+
+## 📦 Output
+
+After execution, you will get:
+
+📊 Charts saved in:
+data/processed/
+
+📄 Excel report:
+data/processed/car-sales-output.xlsx
+
+The Excel file contains:
+- Full cleaned dataset
+- KPI Summary sheet
+- Proper formatting (auto-width, borders, centered text)
+
+---
+
+## 🧠 Skills Demonstrated
+
+- Data Cleaning & Transformation
+- GroupBy & Aggregation
+- Time Series Analysis
+- Data Visualization
+- Excel Automation using OpenPyXL
+- File Path Management using os
+
+---
+
+## 👨‍💻 Author
+
+Kunj Kanojia  
+Python Learner | Data Analysis Enthusiast

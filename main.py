@@ -1,87 +1,157 @@
 import pandas as pd
-
-
-
-# load file 
-car_sales_dataframe = pd.read_csv(r"D:\python\project\car-sales-analysis\data\raw\car-sales-input.csv")
-print(car_sales_dataframe)
-
-# first rows
-print(car_sales_dataframe.head())
-print(car_sales_dataframe.info())
-
-# creating columns
-car_sales_dataframe["Non Taxable Amount"] = car_sales_dataframe["Price"] * car_sales_dataframe["Qty"]
-car_sales_dataframe["CGST 9 %"] = car_sales_dataframe["Non Taxable Amount"] * 9/100
-car_sales_dataframe["SGST 9 %"] = car_sales_dataframe["Non Taxable Amount"] * 9/100
-
-car_sales_dataframe["Total Tax"] = car_sales_dataframe["CGST 9 %"] + car_sales_dataframe["SGST 9 %"]
-print(car_sales_dataframe) # show total tax with CGST and SGST
-
-# total payble
-car_sales_dataframe.insert(7,"Total Sale",(car_sales_dataframe["Total Tax"] + car_sales_dataframe["Non Taxable Amount"]))
-print(car_sales_dataframe)
-
-# total Quantity
-Total_qty = car_sales_dataframe["Qty"].sum()
-
-# total revenue (before tax)
-Total_revenue_before_tax = car_sales_dataframe["Non Taxable Amount"].sum()
-
-# total tax collected
-Total_tax = car_sales_dataframe["Total Tax"].sum()
-
-# total sales ( after tax)
-Total_sales = car_sales_dataframe["Total Sale"].sum()
-
-# create KPI dictionary
-Kpi_data = {
-    "Metric" :["Total Quantity Sold",
-               "Total Revenue (Before tax)",
-               "Total Tax collected","Total Sale"],
-               "value":[Total_qty,
-                        Total_revenue_before_tax
-                        ,Total_tax,Total_sales]}
-
-KPI_df = pd.DataFrame(Kpi_data) # convert to dataframe
-
-# export csv
-output_file = r"D:\python\project\car-sales-analysis\data\processed\car-sales-output.xlsx"
-car_sales_dataframe.to_excel(output_file , index= False)
-
-with pd.ExcelWriter(output_file,engine="openpyxl",mode="a") as f:
-    KPI_df.to_excel(f,sheet_name="KPI Summary",index=False)
-
-print("we successfully complete our task.")
-
-# show Total sales by Car Model
-
-import matplotlib.pyplot as plt
 import os
-os.makedirs(r"D:\python\project\car-sales-analysis\data\processed",exist_ok=True)
+import matplotlib.pyplot as plt
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment, Border, Side
 
-print("\n Monthly car sales trend \n")
-sale_in_month= car_sales_dataframe.groupby("months")["Total Sale"].sum()
-print(sale_in_month)
+# ==============================
+# PATH SETUP
+# ==============================
 
-# Show total sales by each car Model in bar chart
-sale_in_month.plot(kind="bar")
+base_dir = os.path.dirname(__file__)
+raw_path = os.path.join(base_dir, "data", "raw", "car-sales-input.csv")
+processed_dir = os.path.join(base_dir, "data", "processed")
 
-plt.title("Monthly car sales trend")
-plt.xlabel("Months")
-plt.ylabel("Total Sales")
-plt.savefig("D:\python\project\car-sales-analysis\data\processed\sales_in_month.png",dpi =300)
-plt.show()
+os.makedirs(processed_dir, exist_ok=True)
 
-print("Top performing car brands")
-performance_of_model = car_sales_dataframe.groupby("Car Model")["Total Sale"].sum()
-print(performance_of_model)
+output_excel = os.path.join(processed_dir, "car-sales-output.xlsx")
 
-# Show top performing car brands
-performance_of_model.plot(kind="bar")
+# ==============================
+# LOAD DATA
+# ==============================
 
-plt.title("Top performing car brands")
-plt.xlabel("Brand")
-plt.ylabel("Total sales")
-plt.savefig("D:\python\project\car-sales-analysis\data\processed\performance_of_model.png",dpi =300)
-plt.show()
+df = pd.read_csv(raw_path)
+
+# ==============================
+# CALCULATIONS
+# ==============================
+
+df["Total Tax"] = df["CGST"] + df["SGST"]
+df["Revenue"] = df["Quantity"] * df["Selling price"] + df["Total Tax"] - df["Discount"]
+df["Profit"] = df["Revenue"] - df["Cost price"]
+
+# ==============================
+# MODEL PROFIT ANALYSIS
+# ==============================
+
+profit_by_model = df.groupby("Model")["Profit"].sum().sort_values()
+
+plt.figure(figsize=(10, 6))
+ax = profit_by_model.plot(kind="bar", color="orange")
+plt.title("Profit by Model")
+plt.xlabel("Model")
+plt.ylabel("Profit")
+
+for container in ax.containers:
+    ax.bar_label(container, fmt='₹%.0f')
+
+plt.tight_layout()
+plt.savefig(os.path.join(processed_dir, "profit_by_model.png"), dpi=300)
+plt.close()
+
+# ==============================
+# MONTHLY ANALYSIS
+# ==============================
+
+df["Date"] = pd.to_datetime(df["Date"])
+df["Month"] = df["Date"].dt.to_period("M")
+
+monthly = df.groupby("Month")["Revenue"].sum().reset_index()
+monthly["MoM Growth %"] = monthly["Revenue"].pct_change().mul(100).round(2).fillna(0)
+
+plt.figure(figsize=(8, 5))
+plt.plot(monthly["Month"].astype(str), monthly["MoM Growth %"], marker="o")
+plt.title("Month-to-Month Growth")
+plt.xticks(rotation=45)
+
+for i, v in enumerate(monthly["MoM Growth %"]):
+    plt.text(i, v, f"{v:.0f}%", ha="center", va="bottom")
+
+plt.axhline(0)
+plt.tight_layout()
+plt.savefig(os.path.join(processed_dir, "monthly_growth.png"), dpi=300)
+plt.close()
+
+# ==============================
+# CITY PROFIT ANALYSIS
+# ==============================
+
+profit_in_city = df.groupby("City")["Profit"].sum().sort_values()
+
+plt.figure(figsize=(10, 6))
+ax = profit_in_city.plot(kind="bar", color="brown")
+plt.title("Profit in City")
+plt.xlabel("City")
+plt.ylabel("Profit")
+
+for container in ax.containers:
+    ax.bar_label(container, fmt='₹%.0f')
+
+plt.tight_layout()
+plt.savefig(os.path.join(processed_dir, "profit_in_city.png"), dpi=300)
+plt.close()
+# ==============================
+# KPI SUMMARY
+# ==============================
+
+kpi_data = {
+    "Metric": [
+        "Total Quantity",
+        "Total Revenue",
+        "Total Profit",
+        "Top Model",
+        "Worst Model"
+        
+    ],
+    "Value": [
+        df["Quantity"].sum(),
+        df["Revenue"].sum(),
+        df["Profit"].sum(),
+        profit_by_model.idxmax(),
+        profit_by_model.idxmin()
+    ]
+}
+
+kpi_df = pd.DataFrame(kpi_data)
+
+# ==============================
+# EXPORT TO EXCEL
+# ==============================
+
+with pd.ExcelWriter(output_excel, engine="openpyxl") as writer:
+    df.to_excel(writer, sheet_name="Full Data", index=False)
+    kpi_df.to_excel(writer, sheet_name="KPI Summary", index=False)
+
+# ==============================
+# FORMAT EXCEL (ALL SHEETS)
+# ==============================
+
+wb = load_workbook(output_excel)
+
+for sheet in wb.sheetnames:
+    ws = wb[sheet]
+
+    center = Alignment(horizontal="center", vertical="center")
+    border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin")
+    )
+
+    for column in ws.columns:
+        max_length = 0
+        col_letter = column[0].column_letter
+
+        for cell in column:
+            cell.alignment = center
+            cell.border = border
+
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        ws.column_dimensions[col_letter].width = max_length + 2
+
+wb.save(output_excel)
+
+print("Project executed successfully!")

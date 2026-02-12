@@ -5,3 +5,7 @@
 ```txt
 pandas
 matplotlib
+numpy
+openpyxl
+
+
