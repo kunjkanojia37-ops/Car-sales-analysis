@@ -155,3 +155,57 @@ for sheet in wb.sheetnames:
 wb.save(output_excel)
 
 print("Project executed successfully!")
+
+
+# ==============================
+# using 
+# ==============================
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score , mean_absolute_error
+
+# # Assine Features - Target
+
+y = df["Profit"]
+
+
+x = df[["Quantity",
+       "Cost price",
+       "Selling price",
+       "Discount"]]
+
+# Train model 
+
+x_train ,x_test,y_train,y_test = train_test_split(
+                                                     x,y,
+                                                  test_size= 0.3,
+                                                random_state= 24
+                                                )
+
+# Model call
+
+model = RandomForestRegressor(n_estimators= 100)
+
+model.fit(x_train,y_train)
+
+prediction = model.predict(x_test)
+
+
+# measure accurancy
+
+MAE = mean_absolute_error(y_test,prediction)
+
+RS = r2_score(y_test,prediction)
+
+print(f"Mean Absolute Error: {MAE}")
+print(f"R-squared: {RS}")
+
+# Save the model to a file
+
+
+import joblib
+
+joblib.dump(model, 'car_sales_model.joblib')
+
+print("Model saved successfully!")  
